@@ -1,0 +1,1807 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#184d3b" />
+    <title>Nala Documentation</title>
+    <style>
+    :root {
+      color-scheme: light;
+      --nala-ui-color-canvas: #f2f0e8;
+      --nala-ui-color-surface: #fffefa;
+      --nala-ui-color-surface-muted: #f7f7f2;
+      --nala-ui-color-text: #18201d;
+      --nala-ui-color-text-muted: #68716c;
+      --nala-ui-color-border: #cbcfc8;
+      --nala-ui-color-accent: #184d3b;
+      --nala-ui-color-accent-strong: #10372a;
+      --nala-ui-color-accent-soft: #d8e8df;
+      --nala-ui-color-warning: #f0b84b;
+      --nala-ui-color-danger: #a43f35;
+      --nala-ui-font-body: "Avenir Next", "Gill Sans", sans-serif;
+      --nala-ui-font-display: "Baskerville", "Iowan Old Style", serif;
+      --nala-ui-radius-small: 4px;
+      --nala-ui-radius-medium: 6px;
+      --nala-ui-radius-large: 8px;
+      --nala-ui-shadow-raised: 0 1.25rem 3.5rem rgba(35, 48, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      background: var(--nala-ui-color-canvas);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background-color: var(--nala-ui-color-canvas);
+      background-image:
+        linear-gradient(rgba(24, 77, 59, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 77, 59, 0.035) 1px, transparent 1px);
+      background-size: 2rem 2rem;
+      color: var(--nala-ui-color-text);
+      font-family: var(--nala-ui-font-body);
+    }
+
+    a {
+      color: var(--nala-ui-color-accent);
+    }
+
+    [slot="brand"] {
+      color: var(--nala-ui-color-text);
+      text-decoration: none;
+    }
+
+    [slot="links"] {
+      display: flex;
+      gap: 1.15rem;
+    }
+
+    [slot="links"] a {
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.84rem;
+      font-weight: 750;
+      text-decoration: none;
+    }
+
+    [slot="links"] a:hover,
+    [slot="links"] a:focus-visible {
+      color: var(--nala-ui-color-accent);
+    }
+
+    .theme-picker {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    .theme-picker select {
+      max-width: 11rem;
+      border: 1px solid transparent;
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.38rem 1.65rem 0.38rem 0.55rem;
+      background: var(--nala-ui-color-surface-muted);
+      color: var(--nala-ui-color-text-muted);
+      font: inherit;
+      font-weight: 600;
+      transition:
+        border-color 150ms ease,
+        background-color 150ms ease,
+        color 150ms ease;
+    }
+
+    .theme-picker select:hover {
+      border-color: var(--nala-ui-color-border);
+      color: var(--nala-ui-color-text);
+    }
+
+    .theme-picker select:focus-visible {
+      border-color: var(--nala-ui-color-accent);
+      outline: 2px solid color-mix(
+        in srgb,
+        var(--nala-ui-color-accent) 24%,
+        transparent
+      );
+      outline-offset: 1px;
+      background: var(--nala-ui-color-surface);
+      color: var(--nala-ui-color-text);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .theme-picker select {
+        transition: none;
+      }
+    }
+
+    .docs-layout {
+      display: grid;
+      width: min(78rem, calc(100% - 2rem));
+      grid-template-columns: 14rem minmax(0, 1fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+      margin: 0 auto;
+      padding: 2rem 0 4rem;
+    }
+
+    .side-nav {
+      display: grid;
+      gap: 0.2rem;
+    }
+
+    .docs-layout.sidebar-collapsed {
+      grid-template-columns: minmax(0, 1fr);
+      width: calc(100% - 2rem);
+    }
+
+    .docs-layout.sidebar-collapsed .docs-page {
+      max-width: none;
+    }
+
+    #documentation-sidebar[hidden] {
+      display: none;
+    }
+
+    .sidebar-toggle {
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.45rem 0.65rem;
+      background: var(--nala-ui-color-surface);
+      color: var(--nala-ui-color-text);
+      font: inherit;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:focus-visible {
+      outline: 3px solid var(--nala-ui-color-accent);
+      outline-offset: 2px;
+    }
+
+    .sidebar-toggle[hidden] {
+      display: none;
+    }
+
+    #sidebar-collapse {
+      width: 100%;
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .side-nav h2 {
+      margin: 1.2rem 0 0.35rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .side-nav h2:first-child {
+      margin-top: 0;
+    }
+
+    .side-nav a {
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.55rem 0.7rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .side-nav a:hover,
+    .side-nav a:focus-visible {
+      background: var(--nala-ui-color-accent-soft);
+      color: var(--nala-ui-color-accent-strong);
+      outline: none;
+    }
+
+    .side-nav a[aria-current="page"] {
+      background: var(--nala-ui-color-accent-soft);
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .side-nav details {
+      min-width: 0;
+    }
+
+    .side-nav summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.55rem 0.7rem;
+      color: var(--nala-ui-color-text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      list-style: none;
+    }
+
+    .side-nav summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .side-nav summary::after {
+      content: "";
+      flex: none;
+      width: 0.4rem;
+      height: 0.4rem;
+      margin-right: 0.15rem;
+      border-right: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg);
+      transition: transform 150ms ease;
+    }
+
+    .side-nav details[open] > summary::after {
+      transform: rotate(45deg);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .side-nav summary::after {
+        transition: none;
+      }
+    }
+
+    .side-nav summary:hover,
+    .side-nav summary:focus-visible {
+      background: var(--nala-ui-color-accent-soft);
+      color: var(--nala-ui-color-accent-strong);
+      outline: none;
+    }
+
+    .side-nav details[open] > summary {
+      color: var(--nala-ui-color-text);
+    }
+
+    .side-nav ul {
+      display: grid;
+      min-width: 0;
+      gap: 0.1rem;
+      margin: 0.1rem 0 0.45rem 0.7rem;
+      border-left: 1px solid var(--nala-ui-color-border);
+      padding: 0 0 0 0.45rem;
+      list-style: none;
+    }
+
+    .side-nav ul a {
+      display: block;
+      padding: 0.4rem 0.55rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      overflow-wrap: anywhere;
+    }
+
+    router-outlet,
+    docs-overview-page,
+    docs-philosophy-page,
+    docs-deno-page,
+    docs-packages-page,
+    docs-components-page,
+    docs-ui-component-page,
+    docs-under-the-hood-http-page,
+    docs-workflow-page {
+      display: block;
+      min-width: 0;
+    }
+
+    .docs-page {
+      max-width: 58rem;
+    }
+
+    .page-eyebrow {
+      margin: 0 0 0.45rem;
+      color: var(--nala-ui-color-accent);
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    .docs-page h1,
+    .docs-page h2,
+    .docs-page h3 {
+      font-family: var(--nala-ui-font-display);
+      font-weight: 600;
+      letter-spacing: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .docs-page [id] {
+      scroll-margin-top: 6rem;
+    }
+
+    .docs-page h1 {
+      max-width: 100%;
+      margin: 0 0 1rem;
+      font-size: clamp(1.9rem, 3.2vw, 3rem);
+      line-height: 1.12;
+    }
+
+    .docs-page h2 {
+      margin: 2.5rem 0 1rem;
+      font-size: 1.65rem;
+    }
+
+    .page-lead {
+      max-width: 44rem;
+      margin: 0 0 2rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .docs-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .docs-stack,
+    .control-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .control-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    nala-card h3,
+    nala-card p {
+      margin-top: 0;
+    }
+
+    nala-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    .code-block {
+      overflow-x: auto;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 1rem;
+      background: #202723;
+      color: #edf4ef;
+      font: 0.82rem/1.65 "SFMono-Regular", Consolas, monospace;
+    }
+
+    .component-preview {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .grid-square-description {
+      display: block;
+    }
+
+    .grid-square-description > span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    nala-grid-item.square-menu::part(content) {
+      padding-right: 3.25rem;
+    }
+
+    nala-grid-item.square-menu nala-context-menu {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: 0.75rem;
+      margin-top: -1.125rem;
+    }
+
+    .component-doc-nav {
+      display: grid;
+      gap: 0.25rem;
+      margin: 0.35rem 0 0.75rem;
+    }
+
+    .component-reference-layout {
+      display: grid;
+      grid-template-areas: "content directory";
+      grid-template-columns: minmax(0, 1fr) 13rem;
+      align-items: start;
+      gap: clamp(1rem, 2vw, 2rem);
+    }
+
+    .component-reference-outlet {
+      grid-area: content;
+    }
+
+    .component-directory {
+      grid-area: directory;
+      position: sticky;
+      top: 1rem;
+      max-height: calc(100vh - 2rem);
+      overflow-y: auto;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-medium);
+      padding: 0.8rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .component-directory > h2 {
+      margin: 0 0 0.5rem;
+      font-size: 1rem;
+    }
+
+    .component-category {
+      border-bottom: 1px solid var(--nala-ui-color-border);
+    }
+
+    .component-category > summary {
+      display: flex;
+      min-height: 2.25rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      color: var(--nala-ui-color-text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .component-category > summary:focus-visible {
+      outline: 3px solid var(--nala-ui-color-accent-soft);
+      outline-offset: 2px;
+    }
+
+    .component-category-count {
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .component-doc-nav a {
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.3rem 0.45rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .component-doc-nav a[aria-current="page"],
+    .component-doc-nav a:hover {
+      background: var(--nala-ui-color-accent-soft);
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .component-reference-outlet {
+      display: block;
+      min-width: 0;
+    }
+
+    .component-demo {
+      display: grid;
+      min-height: 8rem;
+      align-content: center;
+      gap: 1rem;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-medium);
+      padding: 1.25rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .layout-demo {
+      margin: 1.25rem 0 0.8rem;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-medium);
+      padding: clamp(0.7rem, 2vw, 1.25rem);
+      background: var(--nala-ui-color-surface);
+    }
+
+    .layout-demo-label {
+      margin: 0 0 0.8rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.75rem;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    .ui-layout-mobile-nav {
+      display: none;
+    }
+
+    .ui-layout-dashboard {
+      display: grid;
+      grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr);
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .ui-layout-dashboard-main,
+    .ui-layout-catalog,
+    .ui-layout-detail-main,
+    .ui-layout-status {
+      display: grid;
+      min-width: 0;
+      align-content: start;
+      gap: 1rem;
+    }
+
+    .ui-layout-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+    }
+
+    .ui-layout-toolbar h3,
+    .ui-layout-detail h3 {
+      margin: 0;
+    }
+
+    .ui-layout-toolbar .page-eyebrow {
+      margin-bottom: 0.3rem;
+    }
+
+    .ui-layout-toolbar > label {
+      display: grid;
+      flex: 1 1 10rem;
+      gap: 0.25rem;
+    }
+
+    .ui-layout-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+      gap: 0.8rem;
+    }
+
+    .ui-layout-detail {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(12rem, 17rem);
+      align-items: start;
+      gap: 1.25rem;
+    }
+
+    .ui-layout-detail-main {
+      gap: 0.65rem;
+    }
+
+    .ui-layout-detail-main .page-eyebrow {
+      margin: 0;
+    }
+
+    .ui-layout-status {
+      gap: 0.8rem;
+    }
+
+    .layout-tile {
+      display: grid;
+      min-width: 0;
+      min-height: 4rem;
+      place-items: center;
+      border: 1px solid #9eb8a9;
+      border-radius: 4px;
+      padding: 0.65rem;
+      background: #e1eee5;
+      color: #183a2c;
+      font-size: 0.84rem;
+      font-weight: 700;
+      text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .layout-grid-basic {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .layout-grid-responsive {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+      gap: 0.65rem;
+    }
+
+    .layout-grid-implicit,
+    .layout-grid-span-demo,
+    .layout-grid-center-demo,
+    .layout-grid-align-demo,
+    .layout-grid-subgrid {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .layout-grid-implicit {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-auto-rows: minmax(4rem, auto);
+    }
+
+    .layout-grid-span-demo {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .layout-grid-span-demo .featured {
+      grid-column: 1 / 3;
+    }
+
+    .layout-grid-alignment-examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .layout-grid-center-demo,
+    .layout-grid-align-demo {
+      min-height: 8rem;
+      border: 1px dashed var(--nala-ui-color-border);
+      padding: 0.65rem;
+      background: #f7f7f2;
+    }
+
+    .layout-grid-center-demo {
+      place-items: center;
+    }
+
+    .layout-grid-align-demo {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .layout-grid-align-demo .actions {
+      grid-column: 2;
+      justify-self: end;
+      align-self: center;
+    }
+
+    .layout-grid-subgrid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-rows: auto auto auto;
+    }
+
+    .layout-grid-subgrid .subgrid-card {
+      display: grid;
+      grid-row: span 3;
+      grid-template-rows: subgrid;
+      gap: 0.65rem;
+    }
+
+    .layout-grid-areas {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 2fr;
+      grid-template-areas: "cover title" "cover details" "cover actions";
+      gap: 0.65rem;
+    }
+
+    .layout-grid-areas .cover {
+      grid-area: cover;
+      min-height: 10rem;
+    }
+    .layout-grid-areas .title {
+      grid-area: title;
+    }
+    .layout-grid-areas .details {
+      grid-area: details;
+    }
+    .layout-grid-areas .actions {
+      grid-area: actions;
+    }
+
+    .layout-grid-workspace {
+      display: grid;
+      grid-template-columns: minmax(10rem, 1fr) minmax(0, 3fr);
+      grid-template-areas: "filters collection";
+      gap: 0.75rem;
+    }
+
+    .layout-grid-workspace .filters {
+      grid-area: filters;
+    }
+    .layout-grid-workspace .collection {
+      grid-area: collection;
+    }
+
+    .layout-grid-workspace .collection-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+      gap: 0.5rem;
+    }
+
+    .layout-flex-row,
+    .layout-flex-wrap,
+    .layout-flex-card,
+    .layout-flex-toolbar {
+      display: flex;
+      gap: 0.65rem;
+    }
+
+    .layout-flex-sizing-demo {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    .layout-flex-sizing-demo > .cover {
+      flex: 0 0 5rem;
+    }
+
+    .layout-flex-sizing-demo > .details {
+      flex: 1 1 12rem;
+    }
+
+    .layout-flex-equal-row {
+      display: flex;
+      flex: 1 1 100%;
+      gap: 0.65rem;
+    }
+
+    .layout-flex-equal-row .toolbar-item {
+      flex: 1 1 0;
+    }
+
+    .layout-flex-heading,
+    .layout-flex-heading .heading-actions {
+      display: flex;
+    }
+
+    .layout-flex-heading {
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .layout-flex-heading h3 {
+      margin: 0;
+      font-family: var(--nala-ui-font-display);
+      font-size: 1.3rem;
+    }
+
+    .layout-flex-heading .heading-actions {
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .layout-flex-row {
+      align-items: center;
+    }
+    .layout-flex-row .layout-tile {
+      flex: 1 1 0;
+    }
+    .layout-flex-row .layout-tile:first-child {
+      flex: 2 1 0;
+    }
+
+    .layout-flex-wrap {
+      flex-wrap: wrap;
+    }
+    .layout-flex-wrap .layout-tile {
+      flex: 1 1 8rem;
+    }
+
+    .layout-flex-card {
+      align-items: center;
+    }
+    .layout-flex-card .layout-tile:first-child {
+      flex: 0 0 5.5rem;
+      min-height: 7rem;
+    }
+    .layout-flex-card .layout-tile:last-child {
+      flex: 1 1 auto;
+      text-align: left;
+    }
+
+    .layout-flex-toolbar {
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .layout-flex-toolbar .toolbar-spacer {
+      flex: 1 1 auto;
+    }
+
+    .layout-flex-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .layout-flex-nav .nav-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .layout-flex-nav .layout-tile {
+      min-height: 2.75rem;
+    }
+
+    .misc-position-stage {
+      position: relative;
+      width: min(100%, 20rem);
+      min-height: 9rem;
+      margin: 0 auto;
+      padding: 1rem;
+    }
+
+    .misc-position-card {
+      width: 100%;
+      min-height: 7rem;
+    }
+
+    .misc-position-badge {
+      position: absolute;
+      top: 0.35rem;
+      right: 0.35rem;
+      border: 1px solid #8e5734;
+      border-radius: 999px;
+      padding: 0.35rem 0.6rem;
+      background: #f5e5d8;
+      color: #5c321b;
+      font-size: 0.75rem;
+      font-weight: 750;
+    }
+
+    .misc-sizing-compare {
+      display: grid;
+      gap: 0.65rem;
+    }
+
+    .misc-sizing-box {
+      width: 7rem;
+      border: 4px solid #315f70;
+      padding: 0.8rem;
+      background: #d9e9ed;
+      color: #224754;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .misc-sizing-box.content-box {
+      box-sizing: content-box;
+    }
+    .misc-sizing-box.border-box {
+      box-sizing: border-box;
+    }
+
+    .misc-logical-examples {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .misc-logical-card {
+      position: relative;
+      display: grid;
+      min-height: 7rem;
+      align-content: center;
+      gap: 0.4rem;
+      border-inline-start: 4px solid #315f70;
+      padding: 1rem;
+      background: #e7eff0;
+    }
+
+    .misc-logical-control {
+      position: absolute;
+      inset-block-start: 0.5rem;
+      inset-inline-end: 0.5rem;
+      border-radius: 4px;
+      padding: 0.2rem 0.4rem;
+      background: #315f70;
+      color: white;
+      font-size: 0.7rem;
+    }
+
+    .misc-fluid-screen {
+      min-block-size: 12rem;
+      border: 1px dashed var(--nala-ui-color-border);
+      padding: clamp(1rem, 4vw, 2rem);
+      background: var(--nala-ui-color-surface);
+    }
+
+    .misc-fluid-title {
+      margin: 0 0 0.75rem;
+      font-family: var(--nala-ui-font-display);
+      font-size: clamp(1.8rem, 5vw, 3.5rem);
+      line-height: 1.05;
+      text-wrap: balance;
+    }
+
+    .misc-fluid-reading {
+      max-inline-size: min(100%, 44rem);
+      margin: 0;
+      color: var(--nala-ui-color-text-muted);
+      line-height: 1.65;
+    }
+
+    .misc-readable-demo {
+      max-inline-size: 42rem;
+      margin-inline: auto;
+    }
+
+    .misc-readable-demo h3 {
+      max-inline-size: 20ch;
+      margin-block: 0 0.6rem;
+      text-wrap: balance;
+    }
+
+    .misc-readable-copy {
+      max-inline-size: 68ch;
+      margin-block: 0 0.75rem;
+      line-height: 1.65;
+    }
+
+    .misc-readable-token {
+      display: block;
+      overflow-wrap: anywhere;
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .misc-focus-demo {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .misc-focus-demo button {
+      border: 1px solid #224754;
+      border-radius: 4px;
+      padding: 0.65rem 0.9rem;
+      background: #315f70;
+      color: white;
+      cursor: pointer;
+      transition: transform 180ms ease;
+    }
+
+    .misc-focus-demo button:hover {
+      transform: translateY(-2px);
+    }
+
+    .misc-focus-demo button:focus-visible {
+      outline: 3px solid #f0b84b;
+      outline-offset: 3px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .misc-focus-demo button {
+        transition-duration: 0.01ms;
+      }
+    }
+
+    .misc-scrollport {
+      max-height: 10rem;
+      overflow: auto;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      background: var(--nala-ui-color-surface);
+    }
+
+    .misc-sticky-bar {
+      position: sticky;
+      z-index: 1;
+      top: 0;
+      border-bottom: 1px solid var(--nala-ui-color-border);
+      padding: 0.75rem 1rem;
+      background: #e1eee5;
+      color: #183a2c;
+      font-weight: 750;
+    }
+
+    .misc-scroll-row {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--nala-ui-color-border);
+    }
+
+    .misc-image-frame,
+    .cookbook-image-frame {
+      width: min(100%, 24rem);
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      margin: 0 auto;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      background: #202723;
+    }
+
+    .misc-image-frame img,
+    .cookbook-image-frame img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 35%;
+    }
+
+    .misc-container-demo {
+      container-type: inline-size;
+      width: min(100%, 34rem);
+      margin: 0 auto;
+      border: 1px dashed var(--nala-ui-color-border);
+      padding: 0.75rem;
+      resize: horizontal;
+      overflow: auto;
+    }
+
+    .misc-container-card {
+      display: grid;
+      grid-template-columns: 5rem minmax(0, 1fr);
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .misc-container-card .layout-tile {
+      min-height: 4rem;
+    }
+
+    .misc-container-card p {
+      margin: 0;
+      overflow-wrap: anywhere;
+    }
+
+    @container (max-width: 20rem) {
+      .misc-container-card {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .cookbook-center-demo {
+      display: grid;
+      min-height: 11rem;
+      place-items: center;
+      border: 1px dashed var(--nala-ui-color-border);
+      background: #f7f7f2;
+    }
+
+    .cookbook-center-demo .layout-tile {
+      min-width: 10rem;
+    }
+
+    .cookbook-card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+      gap: 0.65rem;
+    }
+
+    .cookbook-center-alternatives {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.65rem;
+    }
+
+    .cookbook-flex-center,
+    .cookbook-overlay-stage {
+      position: relative;
+      display: grid;
+      min-height: 8rem;
+      place-items: center;
+      border: 1px dashed var(--nala-ui-color-border);
+      padding: 0.65rem;
+      background: #f7f7f2;
+    }
+
+    .cookbook-flex-center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .cookbook-overlay {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: rgba(24, 32, 29, 0.72);
+      color: white;
+      font-weight: 750;
+    }
+
+    .cookbook-reading-preview {
+      inline-size: min(100% - 2rem, 68ch);
+      margin-inline: auto;
+      border-inline-start: 3px solid #315f70;
+      padding: 0.5rem 1rem;
+      line-height: 1.65;
+    }
+
+    .cookbook-reading-preview p {
+      margin: 0.4rem 0 0;
+    }
+
+    .cookbook-footer-preview {
+      display: flex;
+      flex-direction: column;
+      min-block-size: 14rem;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 1rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .cookbook-footer-main {
+      flex: 1;
+    }
+    .cookbook-footer-main p {
+      color: var(--nala-ui-color-text-muted);
+    }
+
+    .cookbook-footer-preview footer {
+      border-top: 1px solid var(--nala-ui-color-border);
+      padding-top: 0.7rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.82rem;
+    }
+
+    .cookbook-truncate-preview {
+      width: min(100%, 23rem);
+      margin-inline: auto;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.9rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .cookbook-truncate-title {
+      display: block;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .cookbook-truncate-summary {
+      display: -webkit-box;
+      overflow: hidden;
+      margin-bottom: 0;
+      color: var(--nala-ui-color-text-muted);
+      line-height: 1.5;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+    }
+
+    .cookbook-long-text {
+      width: min(100%, 20rem);
+      margin-inline: auto;
+      border-inline-start: 3px solid #315f70;
+      padding-inline: 0.75rem;
+    }
+
+    .cookbook-long-text strong,
+    .cookbook-long-text code {
+      display: block;
+    }
+
+    .cookbook-long-text code {
+      margin-top: 0.5rem;
+      overflow-wrap: anywhere;
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .cookbook-fluid-spacing-preview {
+      border: 1px dashed var(--nala-ui-color-border);
+      background: var(--nala-ui-color-surface-muted);
+    }
+
+    .cookbook-fluid-spacing {
+      padding: clamp(0.75rem, 4vw, 2rem);
+      background: #e1eee5;
+      color: #183a2c;
+    }
+
+    .cookbook-fluid-spacing p {
+      margin-bottom: 0;
+    }
+
+    .cookbook-icon-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5em;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.65rem 0.85rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .cookbook-icon-dot {
+      width: 0.75rem;
+      height: 0.75rem;
+      border-radius: 50%;
+      background: #a43f35;
+    }
+
+    .cookbook-focus-preview button {
+      border: 1px solid #224754;
+      border-radius: 4px;
+      padding: 0.65rem 0.9rem;
+      background: #315f70;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cookbook-focus-preview button:focus-visible {
+      outline: 3px solid #f0b84b;
+      outline-offset: 3px;
+    }
+
+    .cookbook-header-demo,
+    .cookbook-header-demo nav {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem 1rem;
+    }
+
+    .cookbook-header-demo {
+      justify-content: space-between;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.8rem 1rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .cookbook-header-demo nav {
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .responsive-nav-preview {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      border: 1px solid var(--nala-ui-color-border);
+      border-radius: var(--nala-ui-radius-small);
+      padding: 0.8rem 1rem;
+      background: var(--nala-ui-color-surface);
+    }
+
+    .responsive-nav-preview .desktop-game-nav {
+      display: flex;
+      gap: 1rem;
+      color: var(--nala-ui-color-accent-strong);
+    }
+
+    .responsive-nav-preview .mobile-game-nav {
+      display: none;
+      color: var(--nala-ui-color-accent-strong);
+      font-weight: 700;
+    }
+
+    .component-showcase {
+      margin: 0 0 2rem;
+    }
+
+    .component-example-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.7rem;
+    }
+
+    .component-example-heading .page-eyebrow {
+      margin: 0;
+    }
+
+    .learning-step {
+      margin: 1.5rem 0 2rem;
+      border-left: 2px solid var(--nala-ui-color-accent-soft);
+      padding-left: 1rem;
+    }
+
+    .learning-step h3,
+    .learning-step h4 {
+      margin: 0 0 0.55rem;
+      font-family: var(--nala-ui-font-display);
+      font-weight: 600;
+    }
+
+    .learning-step p {
+      margin: 0 0 0.75rem;
+      color: var(--nala-ui-color-text-muted);
+      line-height: 1.65;
+    }
+
+    .api-table-wrap {
+      overflow-x: auto;
+    }
+
+    .api-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.86rem;
+    }
+
+    .api-table th,
+    .api-table td {
+      border-bottom: 1px solid var(--nala-ui-color-border);
+      padding: 0.7rem 0.65rem;
+      vertical-align: top;
+    }
+
+    .api-table th {
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+    }
+
+    .api-table code {
+      color: var(--nala-ui-color-accent-strong);
+      font-size: 0.82rem;
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+    }
+
+    [role="status"] {
+      min-height: 1.5rem;
+      color: var(--nala-ui-color-text-muted);
+      font-size: 0.85rem;
+    }
+
+    @media (max-width: 52rem) {
+      .docs-layout {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .ui-layout-dashboard,
+      .ui-layout-detail {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .component-reference-layout {
+        grid-template-areas:
+          "directory"
+          "content";
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .component-directory {
+        position: static;
+        max-height: none;
+      }
+
+      .layout-grid-workspace {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "filters"
+          "collection";
+      }
+
+      .layout-grid-areas {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas:
+          "cover"
+          "title"
+          "details"
+          "actions";
+      }
+
+      .layout-grid-alignment-examples {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .misc-logical-examples {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .cookbook-center-alternatives {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .side-nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .side-nav h2 {
+        grid-column: 1 / -1;
+        margin-top: 0.8rem;
+      }
+
+      .side-nav details {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 44rem) {
+      .ui-layout-mobile-nav {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+      }
+
+      .responsive-nav-preview .desktop-game-nav {
+        display: none;
+      }
+
+      .responsive-nav-preview .mobile-game-nav {
+        display: flex;
+      }
+    }
+
+    @media (max-width: 38rem) {
+      .theme-picker {
+        gap: 0.3rem;
+        font-size: 0.72rem;
+      }
+
+      .theme-picker select {
+        max-width: 8rem;
+      }
+
+      .docs-layout {
+        width: min(100% - 1rem, 38rem);
+        padding-top: 1rem;
+      }
+
+      .docs-grid,
+      .control-grid,
+      .side-nav {
+        grid-template-columns: 1fr;
+      }
+
+      .docs-page h1 {
+        font-size: 1.9rem;
+      }
+    }
+    .todo-book {
+      min-width: 0;
+    }
+    .todo-book p,
+    .todo-book li {
+      overflow-wrap: anywhere;
+    }
+    .todo-book pre {
+      max-width: 100%;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    </style>
+  </head>
+  <body>
+    <nala-nav-bar sticky>
+      <a slot="brand" href="/">Nala Documentation</a>
+      <nav slot="links">
+        <a href="/philosophy">Philosophy</a>
+        <a href="/packages">Packages</a>
+        <a href="/components">UI components</a>
+      </nav>
+      <button slot="actions" id="sidebar-toggle" class="sidebar-toggle"
+        type="button" aria-controls="documentation-sidebar" aria-expanded="true"
+        aria-label="Hide documentation navigation">Menu</button>
+      <label slot="actions" class="theme-picker" for="theme-choice">
+        <span>Theme</span>
+        <select id="theme-choice" name="theme">
+          <option value="forest">Forest</option>
+          <option value="ocean">Ocean</option>
+          <option value="sunset">Sunset</option>
+          <option value="violet">Violet</option>
+          <option value="midnight">Midnight</option>
+        </select>
+      </label>
+    </nala-nav-bar>
+
+    <div class="docs-layout">
+      <nala-side-bar id="documentation-sidebar" sticky
+        label="Documentation sections">
+        <button id="sidebar-collapse" class="sidebar-toggle" type="button"
+          aria-controls="documentation-sidebar" aria-expanded="true"
+          aria-label="Hide documentation navigation">Collapse navigation &#8592;</button>
+        <nav class="side-nav">
+          <h2>Start here</h2>
+          <a href="/">Overview</a>
+          <a href="/philosophy">Philosophy</a>
+          <a href="/deno">Why Deno</a>
+          <details class="side-nav-group">
+            <summary>Build a core-only task manager</summary>
+            <ul>
+              <li><a href="/start-here/todo">Book overview</a></li>
+              <li>
+                <details>
+                  <summary>I · Foundation</summary>
+                  <ul>
+                    <li><a href="/start-here/todo/01">1. Source to browser</a></li>
+                    <li><a href="/start-here/todo/02">2. Semantic interface</a></li>
+                    <li><a href="/start-here/todo/03">3. Responsive CSS</a></li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </details>
+          <h2>Reference</h2>
+          <details class="side-nav-group">
+            <summary>Vendor packages</summary>
+            <ul>
+              <li><a href="/packages">All packages</a></li>
+              <li>
+                <details>
+                  <summary>Observables</summary>
+                  <ul>
+                    <li><a href="/packages/observables">Package overview</a></li>
+                    <li><a href="/packages/observables/subject">Subject</a></li>
+                    <li><a href="/packages/observables/behavior-subject">BehaviorSubject</a></li>
+                    <li><a href="/packages/observables/observable">Observable</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li><a href="/packages/state">State</a></li>
+              <li><a href="/packages/http">HTTP</a></li>
+              <li><a href="/packages/components">Components</a></li>
+              <li><a href="/packages/router">Router</a></li>
+              <li><a href="/packages/ui-components">UI Components package</a></li>
+            </ul>
+          </details>
+          <details class="side-nav-group">
+            <summary>UI components</summary>
+            <ul>
+              <li><a href="/components">Overview</a></li>
+              <li><a href="/components/layouts">Layout recipes</a></li>
+              <li><a href="/components/playing-deck">Playing deck</a></li>
+              <li><a href="/components/playing-card">Playing card</a></li>
+              <li><a href="/components/icon">Icon</a></li>
+              <li><a href="/components/table">Table</a></li>
+              <li><a href="/components/button">Button</a></li>
+              <li><a href="/components/input">Input</a></li>
+              <li><a href="/components/textarea">Textarea</a></li>
+              <li><a href="/components/checkbox">Checkbox</a></li>
+              <li><a href="/components/slider">Slider</a></li>
+              <li><a href="/components/color-picker">Color picker</a></li>
+              <li><a href="/components/switch">Switch</a></li>
+              <li><a href="/components/progress">Progress</a></li>
+              <li><a href="/components/loading">Loading</a></li>
+              <li><a href="/components/dialog">Dialog</a></li>
+              <li><a href="/components/accordion">Accordion</a></li>
+              <li><a href="/components/list-view">List view</a></li>
+              <li><a href="/components/grid-view">Grid view</a></li>
+              <li><a href="/components/context-menu">Context menu</a></li>
+              <li><a href="/components/select">Select</a></li>
+              <li><a href="/components/radio-group">Radio group</a></li>
+              <li><a href="/components/multiselect">Multiselect</a></li>
+              <li><a href="/components/tabs">Tabs</a></li>
+              <li><a href="/components/card">Card</a></li>
+              <li><a href="/components/badge">Badge</a></li>
+              <li><a href="/components/callout">Callout</a></li>
+              <li><a href="/components/tooltip">Tooltip</a></li>
+              <li><a href="/components/nav-bar">Navigation bar</a></li>
+              <li><a href="/components/side-bar">Side bar</a></li>
+              <li><a href="/components/theme">Themes and tokens</a></li>
+              <li><a href="/components/code-block">Code block</a></li>
+              <li><a href="/components/code-workspace">Code workspace</a></li>
+              <li><a href="/components/file-tree">File tree</a></li>
+              <li><a href="/components/process-flow">Process flow</a></li>
+              <li><a href="/components/terminal-transcript">Terminal transcript</a></li>
+              <li><a href="/components/page-outline">Page outline</a></li>
+            </ul>
+          </details>
+          <h2>Under the Hood</h2>
+          <a href="/under-the-hood/observables">Observables</a>
+          <a href="/under-the-hood/state">State</a>
+          <a href="/under-the-hood/http">HTTP</a>
+          <a href="/under-the-hood/components">Components</a>
+          <a href="/under-the-hood/router">Router</a>
+          <h2>Explore</h2>
+          <details class="side-nav-group">
+            <summary>TypeScript Book</summary>
+            <ul>
+              <li>
+                <details>
+                  <summary>Part I: Getting oriented</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-01-what-is-typescript">1. What TypeScript is</a></li>
+                    <li><a href="/typescript/chapter-02-first-program">2. Your first TypeScript program</a></li>
+                    <li><a href="/typescript/chapter-03-javascript-foundations">3. JavaScript foundations</a></li>
+                    <li><a href="/typescript/chapter-04-functions">4. Functions</a></li>
+                    <li><a href="/typescript/chapter-05-objects-arrays">5. Objects and arrays</a></li>
+                    <li><a href="/typescript/chapter-06-modules">6. Modules</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Part II: Describing data</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-07-inference">7. Type annotations and inference</a></li>
+                    <li><a href="/typescript/chapter-08-everyday-types">8. Primitive, literal, and special types</a></li>
+                    <li><a href="/typescript/chapter-09-object-types">9. Object types</a></li>
+                    <li><a href="/typescript/chapter-10-arrays-tuples">10. Arrays and tuples</a></li>
+                    <li><a href="/typescript/chapter-11-unions-intersections">11. Unions and intersections</a></li>
+                    <li><a href="/typescript/chapter-12-narrowing">12. Narrowing types</a></li>
+                    <li><a href="/typescript/chapter-13-domain-models">13. Designing domain models</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Part III: Building with types</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-14-function-contracts">14. Functions in depth</a></li>
+                    <li><a href="/typescript/chapter-15-generics">15. Generics</a></li>
+                    <li><a href="/typescript/chapter-16-interfaces-aliases">16. Interfaces and type aliases</a></li>
+                    <li><a href="/typescript/chapter-17-classes">17. Classes and object-oriented TypeScript</a></li>
+                    <li><a href="/typescript/chapter-18-utility-types">18. Utility and mapped types</a></li>
+                    <li><a href="/typescript/chapter-19-async-types">19. Async TypeScript</a></li>
+                    <li><a href="/typescript/chapter-20-error-modeling">20. Errors and result modeling</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Part IV: TypeScript in the browser</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-21-dom-types">21. The DOM type system</a></li>
+                    <li><a href="/typescript/chapter-22-browser-events">22. Browser state and events</a></li>
+                    <li><a href="/typescript/chapter-23-json-http">23. Working with JSON and HTTP</a></li>
+                    <li><a href="/typescript/chapter-24-runtime-validation">24. Runtime validation</a></li>
+                    <li><a href="/typescript/chapter-25-storage-serialization">25. Storage and serialization</a></li>
+                    <li><a href="/typescript/chapter-26-accessibility-contracts">26. Accessibility and browser contracts</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Part V: From feature to application</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-27-project-structure">27. Project structure and boundaries</a></li>
+                    <li><a href="/typescript/chapter-28-state-derived-data">28. State and derived data</a></li>
+                    <li><a href="/typescript/chapter-29-reusable-components">29. Reusable components</a></li>
+                    <li><a href="/typescript/chapter-30-routing-navigation">30. Routing and navigation</a></li>
+                    <li><a href="/typescript/chapter-31-testing-typescript">31. Testing TypeScript</a></li>
+                    <li><a href="/typescript/chapter-32-refactoring">32. Refactoring safely</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Part VI: Professional TypeScript</summary>
+                  <ul>
+                    <li><a href="/typescript/chapter-33-compiler-configuration">33. Compiler configuration</a></li>
+                    <li><a href="/typescript/chapter-34-type-design-scale">34. Type design at scale</a></li>
+                    <li><a href="/typescript/chapter-35-declaration-files">35. Declaration files and JavaScript interop</a></li>
+                    <li><a href="/typescript/chapter-36-debugging-type-errors">36. Debugging type errors</a></li>
+                    <li><a href="/typescript/chapter-37-performance-maintainability">37. Performance and maintainability</a></li>
+                    <li><a href="/typescript/chapter-38-security-boundaries">38. Security at boundaries</a></li>
+                    <li><a href="/typescript/chapter-39-shipping">39. Shipping and deployment</a></li>
+                    <li><a href="/typescript/chapter-40-capstone">40. Capstone: build Game Shelf</a></li>
+                  </ul>
+                </details>
+              </li>
+            </ul>
+          </details>
+          <details class="side-nav-group">
+            <summary>TypeScript Cookbook</summary>
+            <ul>
+              <li>
+                <details>
+                  <summary>Values and collections</summary>
+                  <ul>
+                    <li><a href="/typescript/cookbook/safe-array-index">An array item might not exist</a></li>
+                    <li><a href="/typescript/cookbook/nullish-defaults">Choose the right default</a></li>
+                    <li><a href="/typescript/cookbook/empty-array-inference">Type an empty collection</a></li>
+                    <li><a href="/typescript/cookbook/empty-object-inference">Type an empty object</a></li>
+                    <li><a href="/typescript/cookbook/filter-type-guard">Narrow filtered array items</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Generics and inference</summary>
+                  <ul>
+                    <li><a href="/typescript/cookbook/generic-array-container">Constrain a generic array value</a></li>
+                    <li><a href="/typescript/cookbook/generic-constraint-preserves-type">Preserve subtypes with constraints</a></li>
+                    <li><a href="/typescript/cookbook/generic-inference-and-type-arguments">Infer generic type arguments</a></li>
+                    <li><a href="/typescript/cookbook/generic-key-value-relationship">Connect generic keys and values</a></li>
+                    <li><a href="/typescript/cookbook/generic-result-envelope">Type reusable API envelopes</a></li>
+                    <li><a href="/typescript/cookbook/generic-filter-defined">Filter nullish values generically</a></li>
+                    <li><a href="/typescript/cookbook/generic-pluck-properties">Project generic properties</a></li>
+                    <li><a href="/typescript/cookbook/generic-function-wrapper">Preserve wrapped function types</a></li>
+                    <li><a href="/typescript/cookbook/generic-value-must-come-from-input">Provide values for generic results</a></li>
+                    <li><a href="/typescript/cookbook/generic-constructor-factory">Create generic values with factories</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Type design</summary>
+                  <ul>
+                    <li><a href="/typescript/cookbook/narrow-union-properties">Narrow union properties</a></li>
+                    <li><a href="/typescript/cookbook/exhaustive-switch">Handle every union case</a></li>
+                    <li><a href="/typescript/cookbook/dynamic-object-key">Index with valid keys</a></li>
+                    <li><a href="/typescript/cookbook/satisfies-config">Validate config with satisfies</a></li>
+                    <li><a href="/typescript/cookbook/object-keys-are-strings">Understand Object.keys types</a></li>
+                    <li><a href="/typescript/cookbook/object-literal-widening">Preserve literal discriminants</a></li>
+                    <li><a href="/typescript/cookbook/literal-union-membership">Check literal-union membership</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Browser APIs</summary>
+                  <ul>
+                    <li><a href="/typescript/cookbook/missing-dom-element">A DOM query can return null</a></li>
+                    <li><a href="/typescript/cookbook/form-values-are-strings">Form values are strings</a></li>
+                    <li><a href="/typescript/cookbook/event-target-narrowing">Narrow an event target</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li>
+                <details>
+                  <summary>Data boundaries</summary>
+                  <ul>
+                    <li><a href="/typescript/cookbook/json-is-unknown">JSON is unknown</a></li>
+                    <li><a href="/typescript/cookbook/dates-from-json">Dates from JSON</a></li>
+                  </ul>
+                </details>
+              </li>
+              <li><a href="/typescript/cookbook/catch-unknown">Safely handle caught errors</a></li>
+              <li><a href="/typescript/cookbook/async-map-promise-all">Wait for async map results</a></li>
+              <li><a href="/typescript/cookbook/promise-allsettled-partial-results">Keep partial async results</a></li>
+              <li><a href="/typescript/cookbook/immutable-update">Update state immutably</a></li>
+              <li><a href="/typescript/cookbook/optional-property-patch">Distinguish omitted patch fields</a></li>
+              <li><a href="/typescript/cookbook/type-only-import">Use type-only imports</a></li>
+            </ul>
+          </details>
+          <details class="side-nav-group">
+            <summary>Native Libraries</summary>
+            <ul>
+              <li><a href="/native-libraries/overview">Overview</a></li>
+              <li><a href="/native-libraries/observables">Callbacks and collections</a></li>
+              <li><a href="/native-libraries/state">Closures and identity</a></li>
+              <li><a href="/native-libraries/http">Fetch API</a></li>
+              <li><a href="/native-libraries/components">Custom Elements and DOM</a></li>
+              <li><a href="/native-libraries/router">History and URL</a></li>
+            </ul>
+          </details>
+          <details class="side-nav-group">
+            <summary>CSS Layout</summary>
+            <ul>
+              <li><a href="/css-layout/overview">Overview</a></li>
+              <li><a href="/css-layout/grid">Grid layout</a></li>
+              <li><a href="/css-layout/flexbox">Flexbox layout</a></li>
+              <li><a href="/css-layout/miscellaneous">Miscellaneous CSS</a></li>
+              <li><a href="/css-layout/cookbook">Cookbook</a></li>
+            </ul>
+          </details>
+          <details class="side-nav-group">
+            <summary>CSS Reference</summary>
+            <ul>
+              <li><a href="/css/foundations">Foundations and cascade</a></li>
+              <li><a href="/css/property-reference">Property reference</a></li>
+              <li><a href="/css/selectors">Selectors and pseudo-classes</a></li>
+              <li><a href="/css/spacing">Box model, margin, and padding</a></li>
+              <li><a href="/css/borders">Borders and outlines</a></li>
+              <li><a href="/css/shadows">Shadows deep dive</a></li>
+              <li><a href="/css/controls">Controls and input behavior</a></li>
+              <li><a href="/css/effects">Filters and visual effects</a></li>
+              <li><a href="/css/cookbook">CSS Cookbook</a></li>
+              <li><a href="/css/display">Display and positioning</a></li>
+              <li><a href="/css/text">Typography and text</a></li>
+              <li><a href="/css/fonts">Fonts and font loading</a></li>
+              <li><a href="/css/visual-design">Visual design and tokens</a></li>
+              <li><a href="/css/backgrounds">Backgrounds and images</a></li>
+              <li><a href="/css/gradients">Gradients deep dive</a></li>
+              <li><a href="/css/interaction">Interaction and accessibility</a></li>
+              <li><a href="/css/animation">Transforms and animation</a></li>
+              <li><a href="/css/animation-deep-dive">Animation deep dive</a></li>
+              <li><a href="/css/media-queries">Media queries</a></li>
+              <li><a href="/css/responsive">Responsive design</a></li>
+              <li><a href="/css/scrolling">Scrolling and sticky content</a></li>
+              <li><a href="/css/components">Components and debugging</a></li>
+              <li><a href="/css/production">Print and production CSS</a></li>
+            </ul>
+          </details>
+          <a href="/workflow">Workflow</a>
+        </nav>
+      </nala-side-bar>
+      <router-outlet></router-outlet>
+    </div>
+
+    <script type="module"
+      src="/demo-apps/nala-documentation/dist/main.js"></script>
+  </body>
+</html>
